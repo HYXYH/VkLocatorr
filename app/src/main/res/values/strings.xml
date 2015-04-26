@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">VkLocator</string>
+
+    <string-array name="menu_array">
+        <item>Map</item>
+        <item>Filter</item>
+        <item>Settings</item>
+
+    </string-array>
+
+    <string name="map_activity_message">Map</string>
+
+    <string name="hello_worlds">Это приложение покажет твоих друзей ВК на карте, ты готов?</string>
+    <string name="offline">offline</string>
+    <string name="online">online</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
