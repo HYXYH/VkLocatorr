@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VkLocator</string>
+    <string name="app_name">Friend Map</string>
 
     <string-array name="menu_array">
         <item>Map</item>
@@ -10,7 +10,7 @@
 
     <string name="map_activity_message">Map</string>
 
-    <string name="hello_worlds">Это приложение покажет твоих друзей ВК на карте, ты готов?</string>
+    <string name="hello_worlds">Find out where your friends are now</string>
     <string name="offline">offline</string>
     <string name="online">online</string>
 

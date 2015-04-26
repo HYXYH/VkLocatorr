@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.example.oskar.vklocator.test.api.Api;
 import com.example.oskar.vklocator.test.api.KException;
@@ -103,6 +105,8 @@ public class MainActivity extends Activity {
     /** Called when the user touches the button */
     public void GoToMap(View view) {
 
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.abc_slide_out_bottom);
+        view.startAnimation(shake);
         try {
             logIn(view);
         } catch (JSONException e) {

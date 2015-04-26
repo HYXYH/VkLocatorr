@@ -48,20 +48,20 @@ public class PositionUpdater {
     public void initPictures()
     {
         try {
-            String pictureInfoQuerry = "http://api.vkontakte.ru/method/users.get?uids=" + vkId + "&fields=photo_50";
+//            String pictureInfoQuerry = "http://api.vkontakte.ru/method/users.get?uids=" + vkId + "&fields=photo_50";
 
-            new RequestImage().execute(pictureInfoQuerry);
-            SystemClock.sleep(10);
+//            new RequestImage().execute(pictureInfoQuerry);
+  //          SystemClock.sleep(10);
 
             JSONObject pictureInfo = new JSONObject(pictureQuerryRezult);
             String pictureUrl = pictureInfo.getString("photo_50");
 
 
-            bmp = BitmapFactory.decodeFile(pictureUrl);
+    //        bmp = BitmapFactory.decodeFile(pictureUrl);
         } catch (Exception e) {
-            bmp = BitmapFactory.decodeResource(, R.drawable.online);
+      //      bmp = BitmapFactory.decodeResource(, R.drawable.online);
         }
-        pictures.put(vkId, bmp);
+       // pictures.put(vkId, bmp);
     }
 
 
