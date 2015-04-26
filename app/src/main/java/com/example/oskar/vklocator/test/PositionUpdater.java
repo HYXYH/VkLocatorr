@@ -1,8 +1,8 @@
 package com.example.oskar.vklocator.test;
 
 
-import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -26,8 +26,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Dictionary;
+import java.net.URL;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -37,34 +36,6 @@ import java.util.TreeMap;
  */
 public class PositionUpdater {
     Map pictures = new TreeMap<String, Bitmap>();
-    String pictureQuerryRezult;
-    Context context;
-
-    public PositionUpdater(Context ctx) {
-        context = ctx;
-    }
-
-
-    public void initPictures()
-    {
-        try {
-//            String pictureInfoQuerry = "http://api.vkontakte.ru/method/users.get?uids=" + vkId + "&fields=photo_50";
-
-//            new RequestImage().execute(pictureInfoQuerry);
-  //          SystemClock.sleep(10);
-
-            JSONObject pictureInfo = new JSONObject(pictureQuerryRezult);
-            String pictureUrl = pictureInfo.getString("photo_50");
-
-
-    //        bmp = BitmapFactory.decodeFile(pictureUrl);
-        } catch (Exception e) {
-      //      bmp = BitmapFactory.decodeResource(, R.drawable.online);
-        }
-       // pictures.put(vkId, bmp);
-    }
-
-
 
 
     public void showMe() {
@@ -75,7 +46,7 @@ public class PositionUpdater {
         new RequestTask().execute("http://friendtracker.esy.es/read_users.php");
     }
 
-    /// THE SHITTA FUCKAAH
+
     class RequestTask extends AsyncTask<String, String, String> {
 
         @Override
@@ -113,7 +84,6 @@ public class PositionUpdater {
         }
 
 
-
         void parseUsers(String result) {
 
             try {
@@ -135,15 +105,16 @@ public class PositionUpdater {
 
 
                         BitmapDescriptor bmp;
-                        if (pictures.containsKey(vkId)) {
+                        if (pictures.containsKey(vkId) && pictures.get(vkId) != null) {
                             bmp = BitmapDescriptorFactory.fromBitmap((Bitmap) pictures.get(vkId));
                         } else {
                             bmp = BitmapDescriptorFactory.fromResource(R.drawable.online);
+                            new RequestImage().execute("http://api.vkontakte.ru/method/users.get?uids=" + vkId + "&fields=photo_100");
                         }
 
                         MapPane.mMap.addMarker(new MarkerOptions()
                                 .icon(bmp)
-                                .anchor(0.0f, 1.0f)// Anchors the marker on the bottom left
+                                //.anchor(0.0f, 1.0f)// Anchors the marker on the bottom left
                                 .title(name)
                                 .snippet(name + "  " + vkId)
                                 .position(new LatLng(Double.parseDouble(px), Double.parseDouble(py))));
@@ -164,4 +135,68 @@ public class PositionUpdater {
     }
 
 
+    class RequestImage extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... uri) {
+            HttpClient httpclient = new DefaultHttpClient();
+            HttpResponse response;
+            String responseString = null;
+            try {
+                response = httpclient.execute(new HttpGet(uri[0]));
+                StatusLine statusLine = response.getStatusLine();
+                if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    response.getEntity().writeTo(out);
+                    out.close();
+                    responseString = out.toString();
+                } else {
+                    //Closes the connection.
+                    response.getEntity().getContent().close();
+                    throw new IOException(statusLine.getReasonPhrase());
+                }
+            } catch (ClientProtocolException e) {
+            } catch (IOException e) {
+            }
+            return responseString;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.d("435678", "ResponseImage: " + result);
+            try {
+
+                JSONObject allInfo = new JSONObject(result);
+                JSONObject pictureInfo = allInfo.getJSONArray("response").getJSONObject(0);
+                final String pictureUrl = pictureInfo.getString("photo_100");
+                final String vkId = pictureInfo.getString("uid");
+                new DownloadImage().execute(vkId, pictureUrl);
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+
+    }
+
+
+    class DownloadImage extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... uri) {
+            try {
+                pictures.put(uri[0], BitmapFactory.decodeStream(new URL(uri[1]).openStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "okay";
+        }
+
+
+    }
 }
